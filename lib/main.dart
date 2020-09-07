@@ -41,7 +41,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
         primaryColor: Color(0xFF263238),
-        accentColor: Color(0xFF65d3c3),
+        accentColor: Color(0xFFFCCD2F),
         primarySwatch: MaterialColor(
           0xFF65d3c3,
           {

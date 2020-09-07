@@ -23,7 +23,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
+  flutter_datetime_picker:
   flutter_localizations:
     sdk: flutter
 
