@@ -24,8 +24,12 @@ class _CadastroOutrasInformacoesPageState
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   TextEditingController familiaController = TextEditingController();
-  List<Map> ministerios = [];
-  List<Map> cursos = [];
+
+  Map objNavigation = {
+    "familia": null,
+    "ministerios": [],
+    "cursos": [],
+  };
 
   _navigateWithParams(BuildContext context, Widget page, obj) async {
     var paramsEdited = await Navigator.push(
@@ -35,13 +39,15 @@ class _CadastroOutrasInformacoesPageState
         offset: Offset(0, 1),
       ),
     );
-
+    objNavigation[obj] = paramsEdited;
     setState(() {});
-    print(paramsEdited);
   }
 
   @override
   Widget build(BuildContext context) {
+    if (objNavigation['familia'] != null) {
+      familiaController.text = objNavigation['familia'].nome;
+    }
     return Scaffold(
       appBar: AppBar(
         textTheme: Theme.of(context).textTheme,
@@ -177,7 +183,7 @@ class _CadastroOutrasInformacoesPageState
                 ),
               ),
               Container(
-                child: ministerios.length > 0
+                child: objNavigation['ministerios'].length > 0
                     ? Container()
                     : Container(
                         height: 128,
@@ -259,7 +265,7 @@ class _CadastroOutrasInformacoesPageState
                 padding: EdgeInsets.only(
                   bottom: 150,
                 ),
-                child: ministerios.length > 0
+                child: objNavigation['cursos'].length > 0
                     ? Container()
                     : Container(
                         height: 128,
