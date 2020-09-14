@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ipro_app/pages/selecionar-familia.page.dart';
+import 'package:ipro_app/pages/selecionar-ministerio.page.dart';
 import 'package:ipro_app/util/slide-route.dart';
 import 'package:ipro_app/widgets/input-field-cadastro.widget.dart';
 
@@ -40,6 +41,7 @@ class _CadastroOutrasInformacoesPageState
       ),
     );
     objNavigation[obj] = paramsEdited;
+    print(objNavigation);
     setState(() {});
   }
 
@@ -47,6 +49,14 @@ class _CadastroOutrasInformacoesPageState
   Widget build(BuildContext context) {
     if (objNavigation['familia'] != null) {
       familiaController.text = objNavigation['familia'].nome;
+    }
+
+    if(objNavigation['ministerios'] == null){
+      objNavigation['ministerios'] = [];
+    }
+
+    if(objNavigation['cursos'] == null){
+      objNavigation['cursos'] = [];
     }
     return Scaffold(
       appBar: AppBar(
@@ -162,7 +172,9 @@ class _CadastroOutrasInformacoesPageState
                         onTap: () {
                           _navigateWithParams(
                             context,
-                            SelecionarFamiliaPage(),
+                            SelecionarMinisterioPage(
+                              tag: 'ministerios',
+                            ),
                             'ministerios',
                           );
                         },
@@ -241,7 +253,9 @@ class _CadastroOutrasInformacoesPageState
                         onTap: () {
                           _navigateWithParams(
                             context,
-                            SelecionarFamiliaPage(),
+                            SelecionarMinisterioPage(
+                              tag: 'cursos',
+                            ),
                             'cursos',
                           );
                         },
