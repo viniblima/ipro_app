@@ -3,6 +3,7 @@ import 'package:ipro_app/pages/selecionar-familia.page.dart';
 import 'package:ipro_app/pages/selecionar-ministerio.page.dart';
 import 'package:ipro_app/util/slide-route.dart';
 import 'package:ipro_app/widgets/input-field-cadastro.widget.dart';
+import 'package:ipro_app/widgets/ministerio-selecionado-grid.widget.dart';
 
 class CadastroOutrasInformacoesPage extends StatefulWidget {
   final String nome;
@@ -51,11 +52,11 @@ class _CadastroOutrasInformacoesPageState
       familiaController.text = objNavigation['familia'].nome;
     }
 
-    if(objNavigation['ministerios'] == null){
+    if (objNavigation['ministerios'] == null) {
       objNavigation['ministerios'] = [];
     }
 
-    if(objNavigation['cursos'] == null){
+    if (objNavigation['cursos'] == null) {
       objNavigation['cursos'] = [];
     }
     return Scaffold(
@@ -174,6 +175,7 @@ class _CadastroOutrasInformacoesPageState
                             context,
                             SelecionarMinisterioPage(
                               tag: 'ministerios',
+                              selecionados: objNavigation['ministerios'],
                             ),
                             'ministerios',
                           );
@@ -196,7 +198,44 @@ class _CadastroOutrasInformacoesPageState
               ),
               Container(
                 child: objNavigation['ministerios'].length > 0
-                    ? Container()
+                    ? Container(
+                        child: Builder(
+                          builder: (_) {
+                            int contador = objNavigation['ministerios'].length;
+                            double height = 40;
+                            if (contador.isOdd) {
+                              height *= (contador + 1);
+                            } else {
+                              height *= contador;
+                            }
+
+                            return Container(
+                              height: height,
+                              child: GridView.builder(
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  childAspectRatio: MediaQuery.of(context)
+                                          .size
+                                          .width /
+                                      (MediaQuery.of(context).size.height / 4),
+                                ),
+                                itemCount: contador,
+                                itemBuilder: (context, index) {
+                                  return GridTile(
+                                    child: Center(
+                                      child: Text(
+                                        objNavigation['ministerios'][index]
+                                            .nome,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                        ),
+                      )
                     : Container(
                         height: 128,
                         margin: EdgeInsets.symmetric(
@@ -255,6 +294,7 @@ class _CadastroOutrasInformacoesPageState
                             context,
                             SelecionarMinisterioPage(
                               tag: 'cursos',
+                              selecionados: objNavigation['cursos'],
                             ),
                             'cursos',
                           );
@@ -280,7 +320,44 @@ class _CadastroOutrasInformacoesPageState
                   bottom: 150,
                 ),
                 child: objNavigation['cursos'].length > 0
-                    ? Container()
+                    ? Container(
+                        child: Builder(
+                          builder: (_) {
+                            int contador = objNavigation['cursos'].length;
+                            double height = 40;
+                            if (contador.isOdd) {
+                              height *= (contador + 1);
+                            } else {
+                              height *= contador;
+                            }
+
+                            return Container(
+                              height: height,
+                              child: GridView.builder(
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  childAspectRatio: MediaQuery.of(context)
+                                          .size
+                                          .width /
+                                      (MediaQuery.of(context).size.height / 4),
+                                ),
+                                itemCount: contador,
+                                itemBuilder: (context, index) {
+                                  return GridTile(
+                                    child: Center(
+                                      child: Text(
+                                        objNavigation['cursos'][index]
+                                            .nome,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                        ),
+                      )
                     : Container(
                         height: 128,
                         margin: EdgeInsets.symmetric(

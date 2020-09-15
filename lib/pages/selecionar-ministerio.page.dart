@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:ipro_app/store/ministerio/ministerio.store.dart';
 import 'package:ipro_app/widgets/button-grid-ministerio.widget.dart';
+import 'package:mobx/mobx.dart';
 
 class SelecionarMinisterioPage extends StatefulWidget {
   final String tag;
+  final List selecionados;
 
   SelecionarMinisterioPage({
     @required this.tag,
+    @required this.selecionados,
   });
 
   @override
@@ -19,13 +23,16 @@ class _SelecionarMinisterioPageState extends State<SelecionarMinisterioPage> {
   List objs = [];
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    if(widget.tag == 'ministerios'){
+    if (widget.tag == 'ministerios') {
       _ministerioStore.pegarMinisterios();
     } else {
       _ministerioStore.pegarCursos();
     }
+  }
+
+  addObjeto() {
+    setState(() {});
   }
 
   @override
@@ -45,7 +52,7 @@ class _SelecionarMinisterioPageState extends State<SelecionarMinisterioPage> {
         ),
         leading: IconButton(
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.of(context).pop(widget.selecionados);
           },
           icon: Icon(
             Icons.arrow_back,
@@ -64,20 +71,90 @@ class _SelecionarMinisterioPageState extends State<SelecionarMinisterioPage> {
             child: Text(
                 'Aqui você pode selecionar os ministério que você está trabalhando na nossa comunidade! Você pode selecionar mais de um ministério por vez!'),
           ),
-          Container(
-            height: 1000,
-            child: GridView.builder(
-              physics: NeverScrollableScrollPhysics(),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-              ),
-              itemCount: 11,
-              itemBuilder: (context, index) {
-                return ButtonGridMinisterio();
-              },
-            ),
+          Observer(
+            builder: (_) {
+              if (!_ministerioStore.isLoading) {
+                double height = 100;
+                int contador = widget.tag == 'ministerios'
+                    ? _ministerioStore.ministerios.length
+                    : _ministerioStore.cursos.length;
+
+                if (contador.isOdd) {
+                  height *= (contador + 1);
+                } else {
+                  height *= contador;
+                }
+
+                if (contador == 0) {
+                  return Container(
+                    height: MediaQuery.of(context).size.height / 1.5,
+                    child: Center(
+                      child: Text(' Sem ${widget.tag} para selecionar'),
+                    ),
+                  );
+                }
+                return Container(
+                  height: height,
+                  child: GridView.builder(
+                    physics: NeverScrollableScrollPhysics(),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                    ),
+                    itemCount: contador,
+                    itemBuilder: (context, index) {
+                      dynamic elements = widget.tag == 'ministerios'
+                          ? _ministerioStore.ministerios
+                          : _ministerioStore.cursos;
+
+                      bool slctd = false;
+
+                      for (var selecionado in widget.selecionados) {
+                        if (elements[index]?.id == selecionado.id) {
+                          slctd = true;
+                        }
+                      }
+                      return ButtonGridMinisterio(
+                        objeto: widget.tag == 'ministerios'
+                            ? _ministerioStore.ministerios[index]
+                            : _ministerioStore.cursos[index],
+                        selecionado: slctd,
+                        adicionarObjeto: addObjeto,
+                        objetosSelecionados: widget.selecionados,
+                      );
+                    },
+                  ),
+                );
+              } else {
+                return Container(
+                  height: MediaQuery.of(context).size.height / 1.5,
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+              }
+            },
           ),
         ],
+      ),
+      bottomSheet: Container(
+        width: MediaQuery.of(context).size.width,
+        height: 80,
+        child: RaisedButton(
+          onPressed: () {
+            Navigator.of(context).pop(widget.selecionados);
+          },
+          color: Theme.of(context).accentColor,
+          child: Center(
+            child: Text(
+              'Selecionar ${widget.tag}',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
