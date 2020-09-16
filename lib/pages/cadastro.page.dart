@@ -19,6 +19,8 @@ class _CadastroPageState extends State<CadastroPage> {
   TextEditingController nomeController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController dataController = TextEditingController();
+  TextEditingController senhaController = TextEditingController();
+  TextEditingController confirmarSenhaController = TextEditingController();
 
   Alert alert = Alert();
 
@@ -86,6 +88,32 @@ class _CadastroPageState extends State<CadastroPage> {
                     enabled: true,
                   ),
                 ),
+                Container(
+                  margin: EdgeInsets.only(
+                    top: 24,
+                  ),
+                  child: InputFieldCadastro(
+                    controller: senhaController,
+                    label: 'Senha',
+                    typeKeyboard: TextInputType.text,
+                    isPassword: true,
+                    validatorEmpty: true,
+                    enabled: true,
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.only(
+                    top: 24,
+                  ),
+                  child: InputFieldCadastro(
+                    controller: confirmarSenhaController,
+                    label: 'Confirmar senha',
+                    typeKeyboard: TextInputType.text,
+                    isPassword: true,
+                    validatorEmpty: true,
+                    enabled: true,
+                  ),
+                ),
                 InkWell(
                   onTap: () {
                     DatePicker.showDatePicker(
@@ -147,9 +175,20 @@ class _CadastroPageState extends State<CadastroPage> {
               onTap: () {
                 if (nomeController.text.isEmpty ||
                     emailController.text.isEmpty ||
-                    dataController.text.isEmpty) {
+                    dataController.text.isEmpty ||
+                    senhaController.text.isEmpty ||
+                    confirmarSenhaController.text.isEmpty) {
                   alert.dialog(
                     'Opa! Precisamos de todos os dados!',
+                    'Verifique os campos e tente novamente',
+                    context,
+                  );
+                  return;
+                }
+
+                if (senhaController.text != confirmarSenhaController.text) {
+                  alert.dialog(
+                    'Opa! As senhas não coincidem!',
                     'Verifique os campos e tente novamente',
                     context,
                   );
@@ -164,6 +203,7 @@ class _CadastroPageState extends State<CadastroPage> {
                       nome: nomeController.text,
                       email: emailController.text,
                       dataNascimento: dataController.text,
+                      senha: senhaController.text,
                     ),
                   ),
                 );

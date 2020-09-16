@@ -3,12 +3,15 @@ import 'package:ipro_app/pages/initial-tabs.page.dart';
 import 'package:ipro_app/pages/login.page.dart';
 import 'package:ipro_app/pages/splash-screen.page.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:ipro_app/store/usuario/usuario.store.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(MyApp(
-    logado: false,
-  ));
+  UsuarioStore().checarToken().then((logado) {
+    runApp(MyApp(
+      logado: logado,
+    ));
+  });
 }
 
 class MyApp extends StatelessWidget {

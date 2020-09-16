@@ -120,6 +120,7 @@ class _SelecionarMinisterioPageState extends State<SelecionarMinisterioPage> {
                         selecionado: slctd,
                         adicionarObjeto: addObjeto,
                         objetosSelecionados: widget.selecionados,
+                        index: index,
                       );
                     },
                   ),

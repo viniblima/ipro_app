@@ -1,19 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:ipro_app/pages/initial-tabs.page.dart';
 import 'package:ipro_app/pages/selecionar-familia.page.dart';
 import 'package:ipro_app/pages/selecionar-ministerio.page.dart';
+import 'package:ipro_app/store/usuario/usuario.store.dart';
 import 'package:ipro_app/util/slide-route.dart';
 import 'package:ipro_app/widgets/input-field-cadastro.widget.dart';
-import 'package:ipro_app/widgets/ministerio-selecionado-grid.widget.dart';
 
 class CadastroOutrasInformacoesPage extends StatefulWidget {
   final String nome;
   final String email;
+  final String senha;
   final String dataNascimento;
 
   CadastroOutrasInformacoesPage({
     @required this.nome,
     @required this.email,
     @required this.dataNascimento,
+    @required this.senha,
   });
 
   @override
@@ -26,6 +30,7 @@ class _CadastroOutrasInformacoesPageState
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   TextEditingController familiaController = TextEditingController();
+  UsuarioStore _usuarioStore = UsuarioStore();
 
   Map objNavigation = {
     "familia": null,
@@ -212,6 +217,7 @@ class _CadastroOutrasInformacoesPageState
                             return Container(
                               height: height,
                               child: GridView.builder(
+                                physics: NeverScrollableScrollPhysics(),
                                 gridDelegate:
                                     SliverGridDelegateWithFixedCrossAxisCount(
                                   crossAxisCount: 2,
@@ -334,6 +340,7 @@ class _CadastroOutrasInformacoesPageState
                             return Container(
                               height: height,
                               child: GridView.builder(
+                                physics: NeverScrollableScrollPhysics(),
                                 gridDelegate:
                                     SliverGridDelegateWithFixedCrossAxisCount(
                                   crossAxisCount: 2,
@@ -347,8 +354,7 @@ class _CadastroOutrasInformacoesPageState
                                   return GridTile(
                                     child: Center(
                                       child: Text(
-                                        objNavigation['cursos'][index]
-                                            .nome,
+                                        objNavigation['cursos'][index].nome,
                                       ),
                                     ),
                                   );
@@ -385,19 +391,84 @@ class _CadastroOutrasInformacoesPageState
       bottomSheet: Container(
         width: MediaQuery.of(context).size.width,
         height: 60,
-        child: RaisedButton(
-          onPressed: () {},
-          color: Theme.of(context).accentColor,
-          child: Center(
-            child: Text(
-              'Criar usuário',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
-            ),
-          ),
+        child: Observer(
+          builder: (_) => _usuarioStore.isLoading
+              ? Center(
+                  child: CircularProgressIndicator(),
+                )
+              : RaisedButton(
+                  onPressed: () {
+                    print(objNavigation);
+
+                    List<Map> ministerios = [];
+                    List<Map> cursos = [];
+                    for (var ministerio in objNavigation['ministerios']) {
+                      ministerios.add({
+                        "nome": ministerio.nome,
+                        "id": ministerio.id,
+                      });
+                    }
+                    for (var curso in objNavigation['cursos']) {
+                      cursos.add({
+                        "nome": curso.nome,
+                        "id": curso.id,
+                      });
+                    }
+
+                    Map usuario = {
+                      "email": widget.email,
+                      "nome": widget.nome,
+                      "password": widget.senha,
+                      "familia": objNavigation['familia'] == null
+                          ? null
+                          : {
+                              "id": objNavigation['familia'].id,
+                              "nome": objNavigation['familia'].nome,
+                            },
+                      "ministerios": ministerios,
+                      "cursos": cursos
+                    };
+
+                    print(usuario);
+
+                    _usuarioStore.criarUsuarioApi(usuario).then((element) {
+                      if (element.statusCode == 200) {
+                        print(element.data['token']);
+                        print(element.data['usuario']['nome']);
+                        print(element.data['expires']);
+                        _usuarioStore
+                            .salvarUsuario(
+                                element.data['token'],
+                                element.data['expires'],
+                                element.data['usuario'])
+                            .then((value) {
+                          print(value);
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => InitialTabs(
+                                index: 0,
+                              ),
+                            ),
+                            (Route<dynamic> route) => false,
+                          );
+                        });
+                      } else {}
+                      _usuarioStore.isLoading = false;
+                    });
+                  },
+                  color: Theme.of(context).accentColor,
+                  child: Center(
+                    child: Text(
+                      'Criar usuário',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ),
         ),
       ),
     );

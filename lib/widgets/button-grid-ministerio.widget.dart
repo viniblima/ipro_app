@@ -3,14 +3,16 @@ import 'package:flutter/material.dart';
 class ButtonGridMinisterio extends StatelessWidget {
   final objeto;
   bool selecionado = false;
-  Function adicionarObjeto;
-  List objetosSelecionados;
+  final Function adicionarObjeto;
+  final List objetosSelecionados;
+  final int index;
 
   ButtonGridMinisterio({
     @required this.objeto,
     @required this.selecionado,
     @required this.adicionarObjeto,
     @required this.objetosSelecionados,
+    @required this.index,
   });
 
   @override
@@ -29,12 +31,14 @@ class ButtonGridMinisterio extends StatelessWidget {
             objetosSelecionados.add(objeto);
           } else {
             int index = 0;
-            objetosSelecionados.asMap().forEach((key, value) { 
-              if(value == objeto){
+            objetosSelecionados.asMap().forEach((key, value) {
+              if (value.nome == objeto.nome) {
                 index = key;
+                print('KEY $key');
               }
             });
-
+            print(objeto.nome);
+            print(index);
             objetosSelecionados.removeAt(index);
           }
           adicionarObjeto();
